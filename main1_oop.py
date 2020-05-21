@@ -345,7 +345,8 @@ class Strategy:
         y = np.arange(1, len(self.positions), 1)
         pchange=0
         self.daily_returns=[]
-        capitall=[self.capital_allocation *self.capital]
+        temp3=0 #used for storing the capital changed
+        capitall=[self.capital]
         for y in range(1,len(self.positions)):
             #alloting only specified amount of capital
             capital1= capitall[-1]
@@ -353,11 +354,13 @@ class Strategy:
                 pchange = (self.positions[y][5] - self.positions[y][1]) / self.positions[y][1]
             elif (self.positions[y][2] == 3):
                 pchange = (self.positions[y][1] - self.positions[y][5]) / self.positions[y][1]
-            self.daily_returns.append(pchange)
-            pchange = (1 + pchange)
-            capitall.append(capital1 * pchange)
 
-        #print(capitall)
+            temp3=(pchange* self.capital_allocation * capital1 )+ capital1
+            capitall.append(temp3)
+            self.daily_returns.append(pchange)
+
+
+        #pprint.pprint(capitall)
         
         self.initial_capital_alloted=capitall[0]
         self.final_capital=capitall[-1]
@@ -371,13 +374,15 @@ class Strategy:
         print("ROI: " + str(self.percent_change))
 
         #calc sharp ratio
-        plt.plot(self.daily_returns)
+        plt.plot(self.daily_returns )
+        plt.title('Strategy Returns')
         plt.show()
         self.sharp_ratio=np.sqrt(252) *(np.mean(self.daily_returns))/(np.std(self.daily_returns))
 
         print(f"annualized Sharp ratio: {self.sharp_ratio}")
         print(f"number of days with no positions open: {self.no_position_counter}")
         plt.plot(self.daily_returns)
+
 if __name__== "__main__":
     # ticker_symbol, capital, capital_allocation, cost, slow_sma, fast_sma, max_stop_loss
 
